@@ -1,0 +1,255 @@
+swagger: "2.0"
+info:
+  title: Visitor Management API
+  version: 1.0.0
+
+host: localhost:3000
+basePath: /
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+
+#------------------ PATHS -----------------#            
+paths:
+  /api/admin/visitors:
+    get:
+      tags:
+        - Administrator
+      description: Retrieve a list of all users in the system
+      security:
+        - OAuth2: [admin]
+      responses:
+        200:
+          description: Successfully retrieved
+          schema:
+            $ref: '#/definitions/ArrayOfVisitors'
+        403:
+          $ref: "#/responses/Forbidden"
+  
+  /api/visitors/{visitorId}:
+    get:
+      tags:
+        - Administrator
+        - Central
+      description: Retrieve information of the specified user
+      security:
+        - OAuth2: [admin, central]
+      parameters:
+        - in: path
+          name: visitorId
+          type: integer
+          required: true
+          description: Generated ID of the Visitor
+      responses:
+        200:
+          description: Successfully retrieved
+          schema:
+            $ref: '#/definitions/Visitor'
+        403:
+          $ref: "#/responses/Forbidden"
+        404: 
+          $ref: "#/responses/NotFound"
+        422:
+          $ref: "#/responses/Unprocessable"
+  
+  /api/central/visitors:
+    post:
+      tags:
+        - Administrator
+        - Central
+      description: Register a new visitor in the system.
+      security:
+        - OAuth2: [admin, central]
+      parameters:
+        - name: visitor
+          in: body
+          description: Input Visitor Details
+          required: true
+          schema:
+            $ref: "#/definitions/Visitor"
+      responses:
+        201:
+          description: Successfully Created
+          schema:
+            $ref: "#/definitions/Visitor"
+        403:
+          $ref: "#/responses/Forbidden"
+        422:
+          $ref: "#/responses/Unprocessable"
+  
+  /api/central/visitors/{visitorId}/location:
+    get:
+      tags:
+        - Administrator
+        - Central
+      description: Get the current location of a visitor within the building.
+      security:
+        - OAuth2: [admin, central]
+      parameters:
+        - in: path
+          name: badgeNum
+          type: integer
+          required: true
+          description: Temporary Badge number of the Visitor
+      responses:
+        200:
+          description: Successfully Retrieved
+          schema:
+            $ref: "#/definitions/Location"
+        403:
+          $ref: "#/responses/Forbidden"
+        422:
+          $ref: "#/responses/Unprocessable"
+          
+  /api/central/visitors/{visitorId}/checkIn:
+    patch:
+      tags:
+        - Central
+        - Administrator
+      description: Mark a registered Visitor as checked-in and provide a temporary badge number
+      security:
+        - OAuth2: [admin, central]
+      parameters:
+        - name: visitorId
+          in: path
+          description: ID of the visitor to check-in
+          required: true
+          type: string
+      responses:
+        200:
+          description: Visitor checked-in successfully
+          schema:
+            $ref: "#/definitions/Visitor"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+
+  /api/central/visitors/{visitorId}/checkOut:
+    patch:
+      tags:
+        - Receptionist
+      summary: Check-out a visitor
+      description: Mark a visitor as checked-out and record their exit from the premises.
+      security:
+        - receptionistAuth: []  # Specify that only receptionist role can access this endpoint
+      parameters:
+        - name: visitorId
+          in: path
+          description: ID of the visitor to check-out
+          required: true
+          type: string
+      responses:
+        200:
+          description: Visitor checked-out successfully
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+            
+#-------------------- DEFINITIONS --------------------#
+definitions:
+#VISITOR
+  Visitor:
+    type: object
+    properties:
+      visitorId:
+        type: integer
+        description: Generated ID for the visitor
+      CNIC:
+        type: string
+        description: Legal Identification document of the Visitor
+      visitorName:
+        type: string
+        description: Visitor's full name
+      visitorDOB:
+        type: string
+        format: date
+        description: Date of Birth of the Visitor
+      visitReason:
+        type: string
+        description: The reason of visit
+      checkIn:
+        type: boolean
+        description: Is the visitor checked in or not
+    required:
+      - visitorId
+      - CNIC
+      - visitorName
+      - visitorDOB
+      - visitReason
+#ARRAY OF VISITORS
+  ArrayOfVisitors:
+    type: array
+    items:
+      $ref: "#/definitions/Visitor"
+    example:
+      - visitorId: 34
+        CNIC: '42301-8234365-6'
+        visitorName: Ali Rashid
+        visitorDOB: 2000-04-18
+        visitReason: Job Interview
+#ERRORS
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    required:
+      - code
+      - message
+#LOCATION
+  Location:
+    type: object
+    properties:
+      floor: 
+        type: string
+      clearance:
+        type: boolean
+    required:
+      - floor
+      - clearance
+
+#----------------------- RESPONSES -----------------------
+responses:
+#403
+  Forbidden:
+    description: Forbidden Access
+    schema:
+      $ref: "#/definitions/Error"
+#404  
+  NotFound:
+    description: The specified resource was not found
+    schema:
+      $ref: "#/definitions/Error"
+#422
+  Unprocessable:
+    description: Parameter was not processable
+    schema:
+      $ref: "#/definitions/Error"
+  
+
+#---------------------- SECURITY -------------------------
+securityDefinitions:
+  OAuth2:
+    type: oauth2
+    flow: accessCode
+    authorizationUrl: https://example.com/oauth/authorize
+    tokenUrl: https://example.com/oauth/token
+    scopes:
+      employee: employee features can be accessed (two levels below admin)
+      central: receptionist features can be accessed (one level below admin)
+      admin: administrative features can be accessed
