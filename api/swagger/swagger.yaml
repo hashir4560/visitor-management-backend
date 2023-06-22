@@ -25,9 +25,9 @@ paths:
         200:
           description: Successfully retrieved
           schema:
-            $ref: '#/definitions/ArrayofVisitors'
-        401:
-          $ref: "#/responses/Unauthorized"
+            $ref: '#/definitions/ArrayOfVisitors'
+        403:
+          $ref: "#/responses/Forbidden"
   
   /api/visitors/{visitorId}:
     get:
@@ -42,14 +42,14 @@ paths:
           name: visitorId
           type: integer
           required: true
-          description: Temporary ID of the Visitor
+          description: Generated ID of the Visitor
       responses:
         200:
           description: Successfully retrieved
           schema:
             $ref: '#/definitions/Visitor'
-        401:
-          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
         404: 
           $ref: "#/responses/NotFound"
         422:
@@ -75,8 +75,8 @@ paths:
           description: Successfully Created
           schema:
             $ref: "#/definitions/Visitor"
-        401:
-          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
         422:
           $ref: "#/responses/Unprocessable"
   
@@ -90,23 +90,74 @@ paths:
         - OAuth2: [admin, central]
       parameters:
         - in: path
-          name: visitorId
+          name: badgeNum
           type: integer
           required: true
-          description: Temporary ID of the Visitor
+          description: Temporary Badge number of the Visitor
       responses:
         200:
           description: Successfully Retrieved
           schema:
             $ref: "#/definitions/Location"
-        401:
-          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        422:
+          $ref: "#/responses/Unprocessable"
+          
+  /api/central/visitors/{visitorId}/checkIn:
+    patch:
+      tags:
+        - Central
+        - Administrator
+      description: Mark a registered Visitor as checked-in and provide a temporary badge number
+      security:
+        - OAuth2: [admin, central]
+      parameters:
+        - name: visitorId
+          in: path
+          description: ID of the visitor to check-in
+          required: true
+          type: string
+      responses:
+        200:
+          description: Visitor checked-in successfully
+          schema:
+            $ref: "#/definitions/Visitor"
         403:
           $ref: "#/responses/Forbidden"
         404:
-          $ref: "#/responses/NotFound
-          
+          $ref: "#/responses/NotFound"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
 
+  /api/central/visitors/{visitorId}/checkOut:
+    patch:
+      tags:
+        - Receptionist
+      summary: Check-out a visitor
+      description: Mark a visitor as checked-out and record their exit from the premises.
+      security:
+        - receptionistAuth: []  # Specify that only receptionist role can access this endpoint
+      parameters:
+        - name: visitorId
+          in: path
+          description: ID of the visitor to check-out
+          required: true
+          type: string
+      responses:
+        200:
+          description: Visitor checked-out successfully
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/Error"
+            
 #-------------------- DEFINITIONS --------------------#
 definitions:
 #VISITOR
@@ -115,7 +166,7 @@ definitions:
     properties:
       visitorId:
         type: integer
-        description: Temporary ID for the visitor
+        description: Generated ID for the visitor
       CNIC:
         type: string
         description: Legal Identification document of the Visitor
@@ -129,6 +180,9 @@ definitions:
       visitReason:
         type: string
         description: The reason of visit
+      checkIn:
+        type: boolean
+        description: Is the visitor checked in or not
     required:
       - visitorId
       - CNIC
@@ -136,7 +190,7 @@ definitions:
       - visitorDOB
       - visitReason
 #ARRAY OF VISITORS
-  ArrayofVisitors:
+  ArrayOfVisitors:
     type: array
     items:
       $ref: "#/definitions/Visitor"
@@ -171,9 +225,9 @@ definitions:
 
 #----------------------- RESPONSES -----------------------
 responses:
-#401
-  Unauthorized:
-    description: Unauthorized
+#403
+  Forbidden:
+    description: Forbidden Access
     schema:
       $ref: "#/definitions/Error"
 #404  
