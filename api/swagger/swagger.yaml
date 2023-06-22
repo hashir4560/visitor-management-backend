@@ -1,0 +1,201 @@
+swagger: "2.0"
+info:
+  title: Visitor Management API
+  version: 1.0.0
+
+host: localhost:3000
+basePath: /
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+
+#------------------ PATHS -----------------#            
+paths:
+  /api/admin/visitors:
+    get:
+      tags:
+        - Administrator
+      description: Retrieve a list of all users in the system
+      security:
+        - OAuth2: [admin]
+      responses:
+        200:
+          description: Successfully retrieved
+          schema:
+            $ref: '#/definitions/ArrayofVisitors'
+        401:
+          $ref: "#/responses/Unauthorized"
+  
+  /api/visitors/{visitorId}:
+    get:
+      tags:
+        - Administrator
+        - Central
+      description: Retrieve information of the specified user
+      security:
+        - OAuth2: [admin, central]
+      parameters:
+        - in: path
+          name: visitorId
+          type: integer
+          required: true
+          description: Temporary ID of the Visitor
+      responses:
+        200:
+          description: Successfully retrieved
+          schema:
+            $ref: '#/definitions/Visitor'
+        401:
+          $ref: "#/responses/Unauthorized"
+        404: 
+          $ref: "#/responses/NotFound"
+        422:
+          $ref: "#/responses/Unprocessable"
+  
+  /api/central/visitors:
+    post:
+      tags:
+        - Administrator
+        - Central
+      description: Register a new visitor in the system.
+      security:
+        - OAuth2: [admin, central]
+      parameters:
+        - name: visitor
+          in: body
+          description: Input Visitor Details
+          required: true
+          schema:
+            $ref: "#/definitions/Visitor"
+      responses:
+        201:
+          description: Successfully Created
+          schema:
+            $ref: "#/definitions/Visitor"
+        401:
+          $ref: "#/responses/Unauthorized"
+        422:
+          $ref: "#/responses/Unprocessable"
+  
+  /api/central/visitors/{visitorId}/location:
+    get:
+      tags:
+        - Administrator
+        - Central
+      description: Get the current location of a visitor within the building.
+      security:
+        - OAuth2: [admin, central]
+      parameters:
+        - in: path
+          name: visitorId
+          type: integer
+          required: true
+          description: Temporary ID of the Visitor
+      responses:
+        200:
+          description: Successfully Retrieved
+          schema:
+            $ref: "#/definitions/Location"
+        401:
+          $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound
+          
+
+#-------------------- DEFINITIONS --------------------#
+definitions:
+#VISITOR
+  Visitor:
+    type: object
+    properties:
+      visitorId:
+        type: integer
+        description: Temporary ID for the visitor
+      CNIC:
+        type: string
+        description: Legal Identification document of the Visitor
+      visitorName:
+        type: string
+        description: Visitor's full name
+      visitorDOB:
+        type: string
+        format: date
+        description: Date of Birth of the Visitor
+      visitReason:
+        type: string
+        description: The reason of visit
+    required:
+      - visitorId
+      - CNIC
+      - visitorName
+      - visitorDOB
+      - visitReason
+#ARRAY OF VISITORS
+  ArrayofVisitors:
+    type: array
+    items:
+      $ref: "#/definitions/Visitor"
+    example:
+      - visitorId: 34
+        CNIC: '42301-8234365-6'
+        visitorName: Ali Rashid
+        visitorDOB: 2000-04-18
+        visitReason: Job Interview
+#ERRORS
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    required:
+      - code
+      - message
+#LOCATION
+  Location:
+    type: object
+    properties:
+      floor: 
+        type: string
+      clearance:
+        type: boolean
+    required:
+      - floor
+      - clearance
+
+#----------------------- RESPONSES -----------------------
+responses:
+#401
+  Unauthorized:
+    description: Unauthorized
+    schema:
+      $ref: "#/definitions/Error"
+#404  
+  NotFound:
+    description: The specified resource was not found
+    schema:
+      $ref: "#/definitions/Error"
+#422
+  Unprocessable:
+    description: Parameter was not processable
+    schema:
+      $ref: "#/definitions/Error"
+  
+
+#---------------------- SECURITY -------------------------
+securityDefinitions:
+  OAuth2:
+    type: oauth2
+    flow: accessCode
+    authorizationUrl: https://example.com/oauth/authorize
+    tokenUrl: https://example.com/oauth/token
+    scopes:
+      employee: employee features can be accessed (two levels below admin)
+      central: receptionist features can be accessed (one level below admin)
+      admin: administrative features can be accessed
