@@ -1,0 +1,67 @@
+Database: VisitorManagement
+
+Table: Administrators
+---------------------------------------
+| admin_id   | int      | PRIMARY KEY |
+| username   | varchar  | NOT NULL    |
+| password   | varchar  | NOT NULL    |
+---------------------------------------
+
+Table: Receptionists
+----------------------------------------------
+| receptionist_id   | int      | PRIMARY KEY |
+| username          | varchar  | NOT NULL    |
+| password          | varchar  | NOT NULL    |
+----------------------------------------------
+
+Table: Employees
+------------------------------------------
+| employee_id   | int      | PRIMARY KEY |
+| first_name    | varchar  | NOT NULL    |
+| last_name     | varchar  | NOT NULL    |
+| email         | varchar  | NOT NULL    |
+| phone         | varchar  | NOT NULL    |
+------------------------------------------
+
+Table: Visitors
+--------------------------------------------------------------
+| visitor_id       | int      | PRIMARY KEY | AUTO_INCREMENT |
+| first_name       | varchar  | NOT NULL    |                |
+| last_name        | varchar  | NOT NULL    |                |
+| cnic		   | varchar  | PRIMARY KEY |                |
+| email            | varchar  | NOT NULL    |                |
+| phone            | varchar  | NOT NULL    |                |
+| purpose     	   | varchar  | NOT NULL    |                |
+| additional_info  | text     |             |                |
+| check_in_time    | datetime |             |                |
+| check_out_time   | datetime |             |                |
+| receptionist_id  | int      |             |                |
+| employee_id      | int      |             |                |
+--------------------------------------------------------------
+
+Table: VisitorBadges
+-------------------------------------------------
+| badge_id           | int      | PRIMARY KEY   |
+| visitor_id         | int      | FOREIGN KEY   |
+| badge_number       | varchar  | NOT NULL      |
+| access_permissions | text     |               |
+| validity_start     | datetime |               |
+| validity_end       | datetime |               |
+-------------------------------------------------
+
+Table: Notifications
+----------------------------------------------------
+| notification_id   | int      | PRIMARY KEY       |
+| recipient_id      | int      | FOREIGN KEY       |
+| message           | text     | NOT NULL          |
+| timestamp         | datetime |                   |
+----------------------------------------------------
+
+Table: Reports
+-----------------------------------------------------------------
+| report_id           | int      | PRIMARY KEY | AUTO_INCREMENT |
+| report_name 	      | varchar  | NOT NULL    |                |
+| report_description  | text     |             |                |
+| generated_by        | int      | FOREIGN KEY |                |
+| generated_at        | datetime |             |                |
+-----------------------------------------------------------------
