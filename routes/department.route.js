@@ -34,6 +34,7 @@ departmentRouter.post("/", (req, res) => {
       res.status(400).json({ message: err.sqlMessage });
     });
 });
+
 departmentRouter.put("/name", (req, res) => {
   const { dept_id, name } = req.body;
   db.updateName({
