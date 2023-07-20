@@ -114,6 +114,14 @@ class DB {
       [email, password]
     );
   }
+  //Visits
+  async getVisits() {
+    const conn = await this.connection;
+
+    return conn.query(`
+      SELECT * FROM visit
+    `);
+  }
 }
 
 const db = new DB();
