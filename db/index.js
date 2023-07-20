@@ -6,8 +6,8 @@ class DB {
       host: "localhost",
       port: 3306,
       user: "root",
-      // password: "Samsung.5s",
-      password: "root",
+      password: "Samsung.5s",
+      //password: "root",
       database: "visitor_management_db",
     });
   }
@@ -48,6 +48,16 @@ class DB {
     return conn.query(`
       SELECT id, name, cnic, phone, email FROM visitor
     `);
+  }
+  async createVisitor({ name, phone, cnic, email }) {
+    const conn = await this.connection;
+
+    return conn.query(
+      `
+        INSERT INTO visitor (name,phone,cnic,email) VALUES (?, ?, ?, ?)
+      `,
+      [name, phone, cnic, email]
+    );
   }
 
   async updatePassword({ username, password }) {

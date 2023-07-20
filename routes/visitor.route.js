@@ -22,4 +22,21 @@ visitorRouter.get("/", (req, res) => {
       res.status(400).json({ message: err.sqlMessage });
     });
 });
+visitorRouter.post("/", (req, res) => {
+  // In case of post request, get body parameters like this
+  const { name, email, phone, cnic } = req.body;
+
+  db.createVisitor({ name, email, phone, cnic })
+    .then((result) => {
+      const info = result[0];
+      if (info.affectedRows === 0) {
+        res.status(400).json({ message: "Visitor couldn't be created" });
+      } else {
+        res.status(201).json({ message: "Visitor created" });
+      }
+    })
+    .catch((err) => {
+      res.status(400).json({ message: err.sqlMessage });
+    });
+});
 module.exports = visitorRouter;
