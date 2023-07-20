@@ -122,6 +122,22 @@ class DB {
       SELECT * FROM visit
     `);
   }
+  async createVisit({
+    visitor_id,
+    purpose,
+    checkintime,
+    checkouttime,
+    dept_id,
+  }) {
+    const conn = await this.connection;
+    return conn.query(
+      `
+      INSERT INTO visit(visitor_id, purpose, checkintime, checkouttime, dept_id ) VALUES (?, ?, ?, ?, ?)
+
+      `,
+      [visitor_id, purpose, checkintime, checkouttime, dept_id]
+    );
+  }
 }
 
 const db = new DB();
