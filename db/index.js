@@ -92,8 +92,17 @@ class DB {
     const conn = await this.connection;
     return conn.query(`
        SELECT * FROM department
-
     `);
+  }
+
+  async verifyCredentials({ email, password }) {
+    const conn = await this.connection;
+    return conn.query(
+      `
+      CALL verify_credentials(?, ?)
+    `,
+      [email, password]
+    );
   }
 }
 
