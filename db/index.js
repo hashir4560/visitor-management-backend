@@ -24,14 +24,14 @@ class DB {
       });
   }
 
-  async createAdmin({ first_name, last_name, username }) {
+  async createAdmin({ email, first_name, last_name, password }) {
     const conn = await this.connection;
 
     return conn.query(
       `
-        INSERT INTO admin (first_name, last_name, username, password) VALUES (?, ?, ?, ?)
+        INSERT INTO admin ( email,first_name, last_name , password) VALUES (?, ?, ?, ?)
       `,
-      [first_name, last_name, username, username]
+      [email, first_name, last_name, password]
     );
   }
 
@@ -39,7 +39,7 @@ class DB {
     const conn = await this.connection;
 
     return conn.query(`
-      SELECT id, first_name, last_name, username FROM admin
+      SELECT id, email ,first_name, last_name FROM admin
     `);
   }
   async getVisitors() {
@@ -60,13 +60,13 @@ class DB {
     );
   }
 
-  async updatePassword({ username, password }) {
+  async updatePassword({ email, password }) {
     const conn = await this.connection;
     return conn.query(
       `
-      UPDATE admin SET password = ? WHERE username = ? 
+      UPDATE admin SET password = ? WHERE email = ? 
     `,
-      [password, username]
+      [password, email]
     );
   }
   async createDepartment({ name }) {

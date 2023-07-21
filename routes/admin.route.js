@@ -25,9 +25,9 @@ adminRouter.get("/", (req, res) => {
 
 adminRouter.post("/", (req, res) => {
   // In case of post request, get body parameters like this
-  const { first_name, last_name, username } = req.body;
+  const { email, first_name, last_name, password } = req.body;
 
-  db.createAdmin({ first_name, last_name, username })
+  db.createAdmin({ email, first_name, last_name, password })
     .then((result) => {
       const info = result[0];
       if (info.affectedRows === 0) {
@@ -44,16 +44,16 @@ adminRouter.post("/", (req, res) => {
 });
 
 adminRouter.put("/password", (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
   db.updatePassword({
-    username,
+    email,
     password,
   })
     .then((results) => {
       const info = results[0];
       if (info.affectedRows === 0) {
         res.status(404).json({
-          message: "Admin with this username not exists",
+          message: "Admin with this email not exists",
         });
       } else {
         res.status(200).json({
