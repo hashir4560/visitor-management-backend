@@ -56,23 +56,23 @@ departmentRouter.put("/name", (req, res) => {
     .catch((err) => {
       res.status(400).json({ message: err.sqlMessage });
     });
-  departmentRouter.delete("/delete/:id", (req, res) => {
-    const dept_id = req.params.id;
-    db.deleteDepartment({ dept_id })
-      .then((results) => {
-        if (results.affectedRows === 0) {
-          res.status(404).json({
-            message: "Department not found",
-          });
-        } else {
-          res.status(200).json({
-            message: "Department deleted successfully",
-          });
-        }
-      })
-      .catch((err) => {
-        res.status(500).json({ message: err.sqlMessage });
-      });
-  });
+});
+departmentRouter.delete("/:dept_id", (req, res) => {
+  const dept_id = req.params;
+  db.deleteDepartment(dept_id)
+    .then((results) => {
+      if (results.affectedRows === 0) {
+        res.status(404).json({
+          message: "Department not found",
+        });
+      } else {
+        res.status(200).json({
+          message: "Department deleted successfully",
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({ message: err.sqlMessage });
+    });
 });
 module.exports = departmentRouter;

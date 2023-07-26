@@ -88,7 +88,7 @@ class DB {
       [name, dept_id]
     );
   }
-  async deleteDepartment({ dept_id }) {
+  async deleteDepartment(dept_id) {
     const conn = await this.connection;
     return conn.query(
       `
@@ -119,23 +119,42 @@ class DB {
     const conn = await this.connection;
 
     return conn.query(`
-      SELECT * FROM visit
+      SELECT id,visitor_id,purpose,checkintime,dept_id FROM visit WHERE checkouttime IS NULL
     `);
   }
-  async createVisit({
-    visitor_id,
-    purpose,
-    checkintime,
-    checkouttime,
-    dept_id,
-  }) {
+  async getPastVisits() {
+    const conn = await this.connection;
+
+    return conn.query(`
+    SELECT id,visitor_id,purpose,checkintime,checkouttime,dept_id FROM visit WHERE checkouttime IS NOT NULL`);
+  }
+
+  async createVisit({ visitor_id, purpose, dept_id }) {
     const conn = await this.connection;
     return conn.query(
       `
-      INSERT INTO visit(visitor_id, purpose, checkintime, checkouttime, dept_id ) VALUES (?, ?, ?, ?, ?)
+      INSERT INTO visit(visitor_id, purpose, checkintime,  dept_id) VALUES (?, ?,CURRENT_TIMESTAMP(), ?)
 
       `,
-      [visitor_id, purpose, checkintime, checkouttime, dept_id]
+      [visitor_id, purpose, dept_id]
+    );
+  }
+  async checkout(id) {
+    const conn = await this.connection;
+    return conn.query(
+      `
+    UPDATE visit SET checkouttime = CURRENT_TIMESTAMP() WHERE id=? AND checkouttime IS NULL 
+    `,
+      [id]
+    );
+  }
+  async deleteVisit(id) {
+    const conn = await this.connection;
+    return conn.query(
+      `
+      DELETE FROM visit WHERE id = ?
+    `,
+      [id]
     );
   }
 }
