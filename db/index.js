@@ -60,13 +60,13 @@ class DB {
     );
   }
 
-  async updatePassword({ email, password }) {
+  async updatePassword({ email, password, oldPassword }) {
     const conn = await this.connection;
     return conn.query(
       `
-      UPDATE admin SET password = ? WHERE email = ? 
+      UPDATE admin SET password = ? WHERE email = ? AND password=sha1(unhex(sha1(?)))
     `,
-      [password, email]
+      [password, email, oldPassword]
     );
   }
   async createDepartment({ name }) {
@@ -153,6 +153,15 @@ class DB {
     return conn.query(
       `
       DELETE FROM visit WHERE id = ?
+    `,
+      [id]
+    );
+  }
+  async deleteVisitor(id) {
+    const conn = await this.connection;
+    return conn.query(
+      `
+    DELETE FROM visitor WHERE id = ?
     `,
       [id]
     );

@@ -39,4 +39,22 @@ visitorRouter.post("/", (req, res) => {
       res.status(400).json({ message: err.sqlMessage });
     });
 });
+visitorRouter.delete("/:id", (req, res) => {
+  const id = req.params;
+  db.deleteVisitor(id)
+    .then((results) => {
+      if (results.affectedRows === 0) {
+        res.status(404).json({
+          message: "Vsitor not found",
+        });
+      } else {
+        res.status(200).json({
+          message: "Vsitor deleted successfully",
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({ message: err.sqlMessage });
+    });
+});
 module.exports = visitorRouter;

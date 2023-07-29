@@ -12,7 +12,7 @@ consumes:
 produces:
   - application/json
 
-#------------------ PATHS -----------------#            
+#------------------ PATHS -----------------#
 paths:
   /api/admin/visitors:
     get:
@@ -25,10 +25,10 @@ paths:
         200:
           description: Successfully retrieved
           schema:
-            $ref: '#/definitions/ArrayOfVisitors'
+            $ref: "#/definitions/ArrayOfVisitors"
         403:
           $ref: "#/responses/Forbidden"
-  
+
   /api/visitors/{visitorId}:
     get:
       tags:
@@ -47,14 +47,14 @@ paths:
         200:
           description: Successfully retrieved
           schema:
-            $ref: '#/definitions/Visitor'
+            $ref: "#/definitions/Visitor"
         403:
           $ref: "#/responses/Forbidden"
-        404: 
+        404:
           $ref: "#/responses/NotFound"
         422:
           $ref: "#/responses/Unprocessable"
-  
+
   /api/central/visitors:
     post:
       tags:
@@ -79,7 +79,7 @@ paths:
           $ref: "#/responses/Forbidden"
         422:
           $ref: "#/responses/Unprocessable"
-  
+
   /api/central/visitors/{visitorId}/location:
     get:
       tags:
@@ -103,7 +103,7 @@ paths:
           $ref: "#/responses/Forbidden"
         422:
           $ref: "#/responses/Unprocessable"
-          
+
   /api/central/visitors/{visitorId}/checkIn:
     patch:
       tags:
@@ -139,7 +139,7 @@ paths:
       summary: Check-out a visitor
       description: Mark a visitor as checked-out and record their exit from the premises.
       security:
-        - receptionistAuth: []  # Specify that only receptionist role can access this endpoint
+        - receptionistAuth: [] # Specify that only receptionist role can access this endpoint
       parameters:
         - name: visitorId
           in: path
@@ -157,10 +157,10 @@ paths:
           description: Bad Request
           schema:
             $ref: "#/definitions/Error"
-            
+
 #-------------------- DEFINITIONS --------------------#
 definitions:
-#VISITOR
+  #VISITOR
   Visitor:
     type: object
     properties:
@@ -189,18 +189,18 @@ definitions:
       - visitorName
       - visitorDOB
       - visitReason
-#ARRAY OF VISITORS
+  #ARRAY OF VISITORS
   ArrayOfVisitors:
     type: array
     items:
       $ref: "#/definitions/Visitor"
     example:
       - visitorId: 34
-        CNIC: '42301-8234365-6'
+        CNIC: "42301-8234365-6"
         visitorName: Ali Rashid
         visitorDOB: 2000-04-18
         visitReason: Job Interview
-#ERRORS
+  #ERRORS
   Error:
     type: object
     properties:
@@ -211,11 +211,11 @@ definitions:
     required:
       - code
       - message
-#LOCATION
+  #LOCATION
   Location:
     type: object
     properties:
-      floor: 
+      floor:
         type: string
       clearance:
         type: boolean
@@ -225,22 +225,21 @@ definitions:
 
 #----------------------- RESPONSES -----------------------
 responses:
-#403
+  #403
   Forbidden:
     description: Forbidden Access
     schema:
       $ref: "#/definitions/Error"
-#404  
+  #404
   NotFound:
     description: The specified resource was not found
     schema:
       $ref: "#/definitions/Error"
-#422
+  #422
   Unprocessable:
     description: Parameter was not processable
     schema:
       $ref: "#/definitions/Error"
-  
 
 #---------------------- SECURITY -------------------------
 securityDefinitions:

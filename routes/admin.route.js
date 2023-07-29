@@ -44,10 +44,11 @@ adminRouter.post("/", (req, res) => {
 });
 
 adminRouter.put("/password", (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, oldPassword } = req.body;
   db.updatePassword({
     email,
     password,
+    oldPassword,
   })
     .then((results) => {
       const info = results[0];
