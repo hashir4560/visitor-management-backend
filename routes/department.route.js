@@ -75,4 +75,23 @@ departmentRouter.delete("/:dept_id", (req, res) => {
       res.status(500).json({ message: err.sqlMessage });
     });
 });
+
+departmentRouter.post("/bulk-delete", (req, res) => {
+  const { ids } = req.body;
+  db.deleteDepartments(ids)
+    .then((results) => {
+      if (results.affectedRows === 0) {
+        res.status(400).json({
+          message: "No department deleted",
+        });
+      } else {
+        res.status(200).json({
+          message: "Department(s) deleted successfully",
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(400).json({ message: err.sqlMessage });
+    });
+});
 module.exports = departmentRouter;

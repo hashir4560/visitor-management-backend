@@ -6,8 +6,8 @@ class DB {
       host: "localhost",
       port: 3306,
       user: "root",
-      password: "Samsung.5s",
-      //password: "root",
+      // password: "Samsung.5s",
+      password: "root",
       database: "visitor_management_db",
     });
   }
@@ -164,6 +164,20 @@ class DB {
     DELETE FROM visitor WHERE id = ?
     `,
       [id]
+    );
+  }
+  async deleteVisitors(ids = []) {
+    const conn = await this.connection;
+    return conn.query(
+      `
+    DELETE FROM visitor WHERE id IN (0, ${ids.join(", ")})`
+    );
+  }
+  async deleteDepartments(ids = []) {
+    const conn = await this.connection;
+    return conn.query(
+      `
+    DELETE FROM department WHERE dept_id IN (0, ${ids.join(", ")})`
     );
   }
 }
