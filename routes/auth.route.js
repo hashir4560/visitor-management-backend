@@ -8,6 +8,7 @@ authRouter.post("/login", (req, res) => {
   const { email, password } = req.body;
 
   db.verifyCredentials({ email, password })
+
     .then((results) => {
       const user = results[0][0][0];
 

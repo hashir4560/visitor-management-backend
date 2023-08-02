@@ -54,7 +54,7 @@ adminRouter.put("/password", (req, res) => {
       const info = results[0];
       if (info.affectedRows === 0) {
         res.status(404).json({
-          message: "Admin with this email not exists",
+          message: "Incorrect current password",
         });
       } else {
         res.status(200).json({

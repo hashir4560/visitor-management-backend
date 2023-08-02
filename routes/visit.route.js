@@ -79,4 +79,20 @@ visitRouter.delete("/:id", (req, res) => {
     });
 });
 
+visitRouter.get("/stats", (req, res) => {
+  db.getStats()
+    .then((results) => {
+      const [[{ currentVisits }], [{ pastVisits }]] = results[0];
+      res.status(200).json({
+        data: {
+          currentVisits,
+          pastVisits,
+        },
+      });
+    })
+    .catch((err) => {
+      res.status(400).json({ message: err.sqlMessage });
+    });
+});
+
 module.exports = visitRouter;

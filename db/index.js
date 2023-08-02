@@ -9,6 +9,7 @@ class DB {
       // password: "Samsung.5s",
       password: "root",
       database: "visitor_management_db",
+      multipleStatements: true,
     });
   }
 
@@ -179,6 +180,29 @@ class DB {
       `
     DELETE FROM department WHERE dept_id IN (0, ${ids.join(", ")})`
     );
+  }
+  async getStats() {
+    const conn = await this.connection;
+    return conn.query(`
+      SELECT COUNT(DISTINCT id) 
+      AS currentVisits
+      FROM visit 
+      WHERE (
+        checkintime > DATE_SUB(
+          NOW(), INTERVAL 1 DAY
+        )
+      ) 
+      AND checkouttime IS NULL;  
+      
+      SELECT COUNT(DISTINCT id) 
+      AS pastVisits
+      FROM visit 
+      WHERE (
+        checkouttime > DATE_SUB(
+          NOW(), INTERVAL 1 DAY
+        )
+      );
+    `);
   }
 }
 
