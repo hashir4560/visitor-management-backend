@@ -6,8 +6,7 @@ class DB {
       host: "localhost",
       port: 3306,
       user: "root",
-      // password: "Samsung.5s",
-      password: "root",
+      password: "Samsung.5s",
       database: "visitor_management_db",
       multipleStatements: true,
     });
