@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const db = require("./db");
 const adminRouter = require("./routes/admin.route");
@@ -9,7 +10,7 @@ const getUserFromToken = require("./middleware/get-user-from-token");
 const visitRouter = require("./routes/visit.route");
 
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001;
 
 // MIDDLEWARE
 app.use(cors({ allowedHeaders: "*" }));

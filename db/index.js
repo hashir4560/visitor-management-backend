@@ -3,10 +3,10 @@ const { createConnection } = require("mysql2/promise");
 class DB {
   constructor() {
     this.connection = createConnection({
-      host: "localhost",
-      port: 3306,
-      user: "root",
-      password: "Samsung.5s",
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASS,
       database: "visitor_management_db",
       multipleStatements: true,
     });
